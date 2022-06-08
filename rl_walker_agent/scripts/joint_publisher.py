@@ -61,7 +61,7 @@ class JointPub(object):
         :return:
         """
 
-        rate = rospy.Rate(10)  # 10hz
+        rate = rospy.Rate(200)  # 10hz
         
         
         while (self._bum_zlj_pub.get_num_connections() == 0):
