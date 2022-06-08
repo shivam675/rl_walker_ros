@@ -103,7 +103,7 @@ class WalkerState(object):
         self._alive_reward = alive_reward
         self._desired_force = desired_force
         self._desired_yaw = desired_yaw
-
+        self.base_linear_vel = None
         self._weight_r1 = weight_r1
         self._weight_r2 = weight_r2
         self._weight_r3 = weight_r3
