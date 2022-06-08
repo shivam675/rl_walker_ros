@@ -1,8 +1,8 @@
 <launch>
     <param name="robot_description" command="$(find xacro)/xacro '$(find rl_walker_description)/urdf/bot.xacro'"/>
    
-   <include file="$(find catbot_gazebo)/launch/env.launch" /> 
-   <include file="$(find catbot_gazebo)/launch/controllers.launch" /> 
+   <include file="$(find rl_walker_gzsim)/launch/env.launch" /> 
+   <include file="$(find rl_walker_gzsim)/launch/controllers.launch" /> 
 
 
     <arg name="x" default="0"/>
