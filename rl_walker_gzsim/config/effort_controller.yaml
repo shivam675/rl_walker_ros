@@ -78,25 +78,25 @@ foot_rj_joint_position_controller:
 
 ###############################################
 ################ left hand #####################
-shoulder_zlj_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: shoulder_zlj
-  pid: {p: 10.0, i: 0.0, d: 0.5}
+# shoulder_zlj_joint_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: shoulder_zlj
+#   pid: {p: 10.0, i: 0.0, d: 0.5}
 
-shoulder_xlj_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: shoulder_xlj
-  pid: {p: 10.0, i: 0.0, d: 0.5}
+# shoulder_xlj_joint_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: shoulder_xlj
+#   pid: {p: 10.0, i: 0.0, d: 0.5}
 
-shoulder_ylj_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: shoulder_ylj
-  pid: {p: 10.0, i: 0.0, d: 0.5}
+# shoulder_ylj_joint_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: shoulder_ylj
+#   pid: {p: 10.0, i: 0.0, d: 0.5}
 
-forearm_ylj_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: forearm_ylj
-  pid: {p: 10.0, i: 0.0, d: 0.5}
+# forearm_ylj_joint_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: forearm_ylj
+#   pid: {p: 10.0, i: 0.0, d: 0.5}
 
 ##################################################
 ##################################################
@@ -105,25 +105,25 @@ forearm_ylj_joint_position_controller:
 
 ###############################################
 ################ left hand #####################
-shoulder_zrj_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: shoulder_zrj
-  pid: {p: 10.0, i: 0.0, d: 0.5}
+# shoulder_zrj_joint_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: shoulder_zrj
+#   pid: {p: 10.0, i: 0.0, d: 0.5}
 
-shoulder_xrj_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: shoulder_xrj
-  pid: {p: 10.0, i: 0.0, d: 0.5}
+# shoulder_xrj_joint_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: shoulder_xrj
+#   pid: {p: 10.0, i: 0.0, d: 0.5}
 
-shoulder_yrj_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: shoulder_yrj
-  pid: {p: 10.0, i: 0.0, d: 0.5}
+# shoulder_yrj_joint_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: shoulder_yrj
+#   pid: {p: 10.0, i: 0.0, d: 0.5}
 
-forearm_yrj_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: forearm_yrj
-  pid: {p: 10.0, i: 0.0, d: 0.5}
+# forearm_yrj_joint_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: forearm_yrj
+#   pid: {p: 10.0, i: 0.0, d: 0.5}
 
 ##################################################
 ##################################################
