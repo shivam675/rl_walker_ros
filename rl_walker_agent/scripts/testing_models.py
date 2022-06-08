@@ -16,8 +16,12 @@ if __name__ == "__main__":
     print(env.action_space)
     print(env.observation_space)
 
-    model_path = '/home/ros/custom_ai/src/walker/rl_walker_agent/training_results/300k_reward_eq_v2_step_ddpg.zip'
-    model = DDPG.load(model_path, env=env)
+    # import rospkg
+    rospack = rospkg.RosPack()
+    pkg_path = rospack.get_path('rl_walker_agent')
+    indir = pkg_path + '/training_results/300k_reward_eq_v2_step_ddpg.zip'
+
+    model = DDPG.load(indir, env=env)
     # evaluate_policy(model, env=env, n_eval_episodes=10)
 
     episodes = 15

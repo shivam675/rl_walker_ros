@@ -29,7 +29,10 @@ if __name__ == "__main__":
 
     #     print('Episode: {}  Score: {} '.format(episode, score))
     # env.close()
-    log_path = '/home/ros/custom_ai/src/walker/rl_walker_agent/training_results'
+    rospack = rospkg.RosPack()
+    pkg_path = rospack.get_path('rl_walker_agent')
+    log_path =  pkg_path+'/training_results'
+
     # env_main = DummyVecEnv([lambda: env])
     model = DDPG('MlpPolicy', env, verbose=2, learning_rate=0.001, tensorboard_log=log_path)
     model.learn(total_timesteps= 300000)
