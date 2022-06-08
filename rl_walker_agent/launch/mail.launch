@@ -1,0 +1,8 @@
+<launch>
+
+    <!-- Load the parameters for the algorithm -->
+    <rosparam command="load" file="$(find rl_walker_agent)/configs/qlearn_params.yaml" />
+
+    <!-- Launch the training system -->
+    <node pkg="rl_walker_agent" name="walker_agent_node" type="start_training_v2.py" output="screen"/>
+</launch>
