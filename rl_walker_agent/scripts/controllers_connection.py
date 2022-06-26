@@ -69,19 +69,19 @@ class ControllersConnection():
 
         return reset_result
 
-    def reset_monoped_joint_controllers(self):
+    def reset_walker_joint_controllers(self):
         controllers_reset = [
             'joint_state_controller',
-            'bum_zlj_joint_position_controller',
-            'bum_xlj_joint_position_controller',
-            'bum_ylj_joint_position_controller',
-            'knee_left_joint_position_controller',
-            'foot_lj_joint_position_controller',
-            'bum_zrj_joint_position_controller',
-            'bum_xrj_joint_position_controller',
-            'bum_yrj_joint_position_controller',
-            'knee_right_joint_position_controller',
-            'foot_rj_joint_position_controller',
-            'shoulder_zlj_joint_position_controller',
+            'bum_zlj_joint_effort_controller',
+            'bum_xlj_joint_effort_controller',
+            'bum_ylj_joint_effort_controller',
+            'knee_left_joint_effort_controller',
+            'foot_lj_joint_effort_controller',
+            'bum_zrj_joint_effort_controller',
+            'bum_xrj_joint_effort_controller',
+            'bum_yrj_joint_effort_controller',
+            'knee_right_joint_effort_controller',
+            'foot_rj_joint_effort_controller',
+            # 'shoulder_zlj_joint_effort_controller',
         ]
         self.reset_controllers(controllers_reset)

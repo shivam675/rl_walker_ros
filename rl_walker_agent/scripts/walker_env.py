@@ -43,9 +43,9 @@ class WalkerEnv(gym.Env):
         self.max_height = rospy.get_param("/max_height")
         self.min_height = rospy.get_param("/min_height")
         
-        self.joint_increment_value = rospy.get_param("/joint_increment_value")
+        # self.joint_increment_value = rospy.get_param("/joint_increment_value")
         self.done_reward = rospy.get_param("/done_reward")
-        self.alive_reward = rospy.get_param("/alive_reward")
+        # self.alive_reward = rospy.get_param("/alive_reward")
         self.desired_force = rospy.get_param("/desired_force")
         self.desired_yaw = rospy.get_param("/desired_yaw")
 
@@ -65,9 +65,9 @@ class WalkerEnv(gym.Env):
                                                     min_height=self.min_height,
                                                     abs_max_roll=self.max_incl,
                                                     abs_max_pitch=self.max_incl,
-                                                    joint_increment_value=self.joint_increment_value,
+                                                    # joint_increment_value=self.joint_increment_value,
                                                     done_reward=self.done_reward,
-                                                    alive_reward=self.alive_reward,
+                                                    # alive_reward=self.alive_reward,
                                                     desired_force=self.desired_force,
                                                     desired_yaw=self.desired_yaw,
                                                     weight_r1=self.weight_r1,
@@ -81,7 +81,7 @@ class WalkerEnv(gym.Env):
                                                           self.desired_pose.position.y,
                                                           self.desired_pose.position.z)
 
-        self.monoped_joint_pubisher_object = JointPub()
+        self.walker_joint_pubisher_object = JointPub()
         
 
         '''
@@ -101,23 +101,24 @@ class WalkerEnv(gym.Env):
         ###################################################
         ############### Action Vals #######################
 
-        low_action_joint_vals = np.array(
-            [
-                -0.340, -0.340, 0.0, -1.25, \
-                -0.350, -0.340, -0.95, 0.0, \
-                -1.25, 0.35,
-            ],
-            dtype=np.float32,
-        )
+        # low_action_joint_vals = np.array(
+        #     [
+        #         -10, -10, -10, -10, \
+        #         -10, -10, -10, -10, \
+        #         -10, -10,
+        #     ],
+        #     dtype=np.float32,
+        # )
 
 
-        high_action_joint_vals = np.array(
-            [
-                0.340, 1.0, 1.0, 0.0, 0.65, \
-                0.340, 0.340, 0.95, 0, 0.65, \
-            ],
-            dtype=np.float32,
-        )
+        # high_action_joint_vals = np.array(
+        #     [
+        #         10, 10, 10, 10, \
+        #         10, 10, 10, 10, \
+        #         10, 10,
+        #     ],
+        #     dtype=np.float32,
+        # )
 
         ###################################################
         ############### obs Vals #########################
@@ -126,27 +127,28 @@ class WalkerEnv(gym.Env):
         obs_low_vals = np.array(
             [
                 # body_pose
-                -np.inf, -np.inf, -np.inf, \
+                # -np.inf, x val is omited
+                -np.inf, -10,\
                 # body vel 
-                -np.inf, -np.inf, -np.inf, \
+                -4, -4, -4,\
                 # body orientation
-                -np.pi, -np.pi, -np.pi, \
+                -np.pi, -np.pi, -np.pi,\
                 # body angular_vel
-                -np.inf, -np.inf, -np.inf, \
+                -3, -3, -3,\
                 ########## joint states ##########
-                -0.340, -0.340, 0.0, -1.25, -0.350, \
-                -0.340, -0.95, 0.0,-1.25, 0.35, \
+                -2, -2, -2, -2, -2, \
+                -2, -2, -2, -2, -2, \
                 ############# Angular Vel ########
-                -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, \
-                -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, \
+                -5, -5, -5, -5, -5,\
+                -5, -5, -5, -5, -5,\
                 # Distance from desidre point 
-                -np.inf, \
+                # -np.inf,\
                 ###########  contact forces ######
-                0, 0, \
+                # 0, 0,\
                 ##################################
                 ########## Previous Actions ######
-                -0.340, -0.340, 0.0, -1.25, -0.350, \
-                -0.340, -0.95, 0.0, -1.25, 0.35, \
+                -20, -20, -20, -20, -20,\
+                -20, -20, -20, -20, -20,\
                 ################################
                 
 
@@ -158,27 +160,29 @@ class WalkerEnv(gym.Env):
         obs_high_vals = np.array(
             [
                 # body_pose
-                np.inf, np.inf, np.inf, \
+                # np.inf, x val is omited 
+                np.inf, -10, \
                 # body vel 
-                np.inf, np.inf, np.inf, \
+                4, 4, 4, \
                 # body orientation
                 np.pi, np.pi, np.pi, \
                 # body angular_vel
-                np.inf, np.inf, np.inf, \
+                3, 3, 3, \
                 ########## joint states ##########
-                0.340, 1.0, 1.0, 0.0, 0.65, \
-                0.340, 0.340, 0.95, 0, 0.65, \
+                2, 2, 2, 2, 2, \
+                2, 2, 2, 2, 2, \
+                
                 ############# Angular Vel ########
-                np.inf, np.inf, np.inf, np.inf, np.inf, \
-                np.inf, np.inf, np.inf, np.inf, np.inf, \
+                5, 5, 5, 5, 5,\
+                5, 5, 5, 5, 5,\
                 # Distance from desidre point 
-                np.inf, \
+                # np.inf, \
                 ###########  contact forces ######
-                70, 70, \
+                # 100, 100, \
                 ##################################
                 ########## Previous Actions ######
-                0.340, 1.0, 1.0, 0.0, 0.65, \
-                0.340, 0.340, 0.95, 0, 0.65, \
+                20, 20, 20, 20, 20,\
+                20, 20, 20, 20, 20,\
                 ################################
             ],
             dtype=np.float32,
@@ -186,20 +190,21 @@ class WalkerEnv(gym.Env):
 
 
         """
-        For this version, we consider 10 actions
+        For this version, we consider 10 actions with box space from -20 to + 20 
         1-2) Increment/Decrement of every joint
         """
-        self.action_space = spaces.Box(low=low_action_joint_vals, high=high_action_joint_vals, dtype=np.float32)
+        # self.action_space = spaces.Box(low=-np.inf, high=np.inf, shape=(10,),dtype=np.float32)
+        self.action_space = spaces.Box(low=-1, high=1, shape=(10,),dtype=np.float32)
+        # self.action_space = spaces.MultiDiscrete(np.array([80, 80, 80, 80, 80, 80, 80, 80, 80, 80]))
+        print(self.action_space)
+        print(self.observation_space)
         self.reward_range = (-np.inf, np.inf)
-        self.observation_space = spaces.Box(low=obs_low_vals, high=obs_high_vals, dtype=np.float32)
+        # self.observation_space = spaces.Box(low=obs_low_vals, high=obs_high_vals, dtype=np.float32)
+        self.observation_space = spaces.Box(low=-20, high=20, shape=(41,),dtype=np.float32)
 
-        a = np.array((self.desired_pose.position.x, self.desired_pose.position.y, self.desired_pose.position.z))
-        b = np.array((0, 0, 0))
-
-        self.dis = np.linalg.norm(a-b)
-
-        self.previous_obs = np.array([
-            0, 0, 0.78, 
+        
+        self.previous_obs = [
+            0, 0.78, 
             0, 0, 0, 
             0, 0, 0,
             0, 0, 0,
@@ -207,15 +212,16 @@ class WalkerEnv(gym.Env):
             0, 0, 0, 0, 0,
             0, 0, 0, 0, 0,
             0, 0, 0, 0, 0,
-            self.dis, 0, 0,
             0, 0, 0, 0, 0,            
             0, 0, 0, 0, 0,            
-        ], dtype=np.float32)
+        ]
 
         self.previous_action_commands = np.array([
             0, 0, 0, 0, 0,
             0, 0, 0, 0, 0,
         ], np.float32)
+        # print(len(self.observation_space.sample()))
+        self.step_number = 0
 
         self._seed()
 
@@ -229,34 +235,50 @@ class WalkerEnv(gym.Env):
         self.gazebo.pauseSim()
         self.gazebo.resetSim()
         self.gazebo.change_gravity(0.0, 0.0, 0.0)
-        self.controllers_object.reset_monoped_joint_controllers()
-        self.monoped_joint_pubisher_object.set_init_pose()
+        self.controllers_object.reset_walker_joint_controllers()
+        self.walker_joint_pubisher_object.set_init_pose()
         self.walker_state_object.check_all_systems_ready()
         observation = self.walker_state_object.get_observations()
+        # print(len(observation))
         self.gazebo.change_gravity(0.0, 0.0, -9.81)
         self.gazebo.pauseSim()
+
         state = np.array(observation, dtype=np.float32)
-        print('Last Eps Total Reward: {}'.format(self.reward))
+        # print(len(state))
+        # print('Last Eps Total Reward: {}'.format(self.reward), flush=True, end='\r')
+        self.reward = 0
+        self.step_number = 0
+        self.previous_obs = [
+            0, 0.78, 
+            0, 0, 0, 
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,            
+            0, 0, 0, 0, 0,            
+        ]
+
         return state
 
     def step(self, action):
-        
-        next_action_position = self.walker_state_object.get_action_to_position(action, self.previous_obs)
+        self.step_number += 1
+        action_torques = self.walker_state_object.dump_previous_actions(action, self.previous_action_commands ,self.step_number)
+        self.previous_action_commands = action_torques
         self.gazebo.unpauseSim()
-        self.monoped_joint_pubisher_object.move_joints(next_action_position)
+        self.walker_joint_pubisher_object.move_joints(action_torques)
 
         time.sleep(self.running_step)
         self.gazebo.pauseSim()
 
         observation = self.walker_state_object.get_observations()
-        # self.previous_obs = self.walker_state_object.get_observations()
-        reward,done = self.walker_state_object.process_data()
+        reward, done = self.walker_state_object.process_data()
         msg = Float32()
         msg.data = reward
         self.reward_publisher.publish(msg)
-        self.reward += reward
         # Get the State Discrete Stringuified version of the observations
         state = np.array(observation, dtype=np.float32)
-        self.previous_obs = np.array(observation, dtype=np.float32)
-        # print(state)
+
         return state, reward, done, {}

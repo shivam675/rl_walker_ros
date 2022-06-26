@@ -9,28 +9,28 @@ class JointPub(object):
     def __init__(self):
 
         self.publishers_array = []
-        self._bum_zlj_pub = rospy.Publisher('/bum_zlj_joint_position_controller/command', Float64, queue_size=1)
-        self._bum_xlj_pub = rospy.Publisher('/bum_xlj_joint_position_controller/command', Float64, queue_size=1)
-        self._bum_ylj_pub = rospy.Publisher('/bum_ylj_joint_position_controller/command', Float64, queue_size=1)
-        self._knee_left_pub = rospy.Publisher('/knee_left_joint_position_controller/command', Float64, queue_size=1)
-        self._foot_lj_pub = rospy.Publisher('/foot_lj_joint_position_controller/command', Float64, queue_size=1)
-        self._bum_zrj_pub = rospy.Publisher('/bum_zrj_joint_position_controller/command', Float64, queue_size=1)
-        self._bum_xrj_pub = rospy.Publisher('/bum_xrj_joint_position_controller/command', Float64, queue_size=1)
-        self._bum_yrj_pub = rospy.Publisher('/bum_yrj_joint_position_controller/command', Float64, queue_size=1)
-        self._knee_right_pub = rospy.Publisher('/knee_right_joint_position_controller/command', Float64, queue_size=1)
-        self._foot_rj_pub = rospy.Publisher('/foot_rj_joint_position_controller/command', Float64, queue_size=1)
+        self._bum_zlj_pub = rospy.Publisher('/bum_zlj_joint_effort_controller/command', Float64, queue_size=1)
+        self._bum_xlj_pub = rospy.Publisher('/bum_xlj_joint_effort_controller/command', Float64, queue_size=1)
+        self._bum_ylj_pub = rospy.Publisher('/bum_ylj_joint_effort_controller/command', Float64, queue_size=1)
+        self._knee_left_pub = rospy.Publisher('/knee_left_joint_effort_controller/command', Float64, queue_size=1)
+        self._foot_lj_pub = rospy.Publisher('/foot_lj_joint_effort_controller/command', Float64, queue_size=1)
+        self._bum_zrj_pub = rospy.Publisher('/bum_zrj_joint_effort_controller/command', Float64, queue_size=1)
+        self._bum_xrj_pub = rospy.Publisher('/bum_xrj_joint_effort_controller/command', Float64, queue_size=1)
+        self._bum_yrj_pub = rospy.Publisher('/bum_yrj_joint_effort_controller/command', Float64, queue_size=1)
+        self._knee_right_pub = rospy.Publisher('/knee_right_joint_effort_controller/command', Float64, queue_size=1)
+        self._foot_rj_pub = rospy.Publisher('/foot_rj_joint_effort_controller/command', Float64, queue_size=1)
 
         self.publishers_array = [
-            self._bum_zlj_pub,
             self._bum_xlj_pub,
-            self._bum_ylj_pub,
-            self._knee_left_pub,
-            self._foot_lj_pub,
-            self._bum_zrj_pub,
             self._bum_xrj_pub,
+            self._bum_ylj_pub,
             self._bum_yrj_pub,
-            self._knee_right_pub,
+            self._bum_zlj_pub,
+            self._bum_zrj_pub,
+            self._foot_lj_pub,
             self._foot_rj_pub,
+            self._knee_left_pub,
+            self._knee_right_pub,
         ]
 
         self.init_pos = [
@@ -61,7 +61,7 @@ class JointPub(object):
         :return:
         """
 
-        rate = rospy.Rate(200)  # 10hz
+        rate = rospy.Rate(10)  # 10hz
         
         
         while (self._bum_zlj_pub.get_num_connections() == 0):
@@ -172,16 +172,16 @@ class JointPub(object):
 
 
     def move_joints(self, joints_array):
+        k = list(joints_array)
+        # i = 0
 
-        i = 0
-
-        for publisher_object in self.publishers_array:
+        for idx, publisher_object in enumerate(self.publishers_array):
           joint_value = Float64()
-          joint_value.data = joints_array[i]*4
+          joint_value.data = k[idx]*20
           rospy.logdebug("JointsPos>>"+str(joint_value.data))
         #   rospy.sleep(0.05)
           publisher_object.publish(joint_value)
-          i += 1
+        #   i += 1
 
 
 

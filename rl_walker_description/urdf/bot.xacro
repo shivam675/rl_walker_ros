@@ -8,7 +8,7 @@
 <inertial>
     <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
     <mass value="0.3" />
-    <inertia ixx="0.1" ixy="0.1" ixz="0.1" iyy="0.1" iyz="0.1" izz="0.1"/>
+    <inertia ixx="0.000000001" ixy="0.000000001" ixz="0.000000001" iyy="0.000000001" iyz="0.000000001" izz="0.000000001"/>
 </inertial>
 <visual>
     <origin xyz="0 0 0" rpy="0 0 0" />
@@ -31,7 +31,7 @@
 <link name="base_body">
 <inertial>
     <origin xyz="0.0 0.0 0.5" rpy="0 0 0" />
-    <mass value="4.0" />
+    <mass value="3.0" />
     <inertia ixx="0.42841" ixy="-2.3739" ixz="0.00227" iyy="0.43178" iyz="1.46390" izz="0.08742"/>
 </inertial>
 <visual>
@@ -67,7 +67,7 @@
     <parent link="base_body" />
     <child link="bum_zl" />
     <axis xyz="0 0 1" />
-    <limit lower="-0.345" upper="0.345" effort="1000" velocity="3"/>
+    <limit lower="-0.345" upper="0.345" effort="20" velocity="3"/>
     <!-- dynamics damping="5" friction="0.0"/ -->
 </joint>
 
@@ -75,7 +75,7 @@
 <inertial>
     <origin xyz="0.0 0.0 -0.19" rpy="0 0 0" />
     <mass value="0.3" />
-    <inertia ixx="0.1" ixy="0.1" ixz="0.1" iyy="0.1" iyz="0.1" izz="0.1"/>
+    <inertia ixx="0.000000001" ixy="0.000000001" ixz="0.000000001" iyy="0.000000001" iyz="0.000000001" izz="0.000000001"/>
 </inertial>
 <visual>
     <origin xyz="0 0 0" rpy="0 0 1.571" />
@@ -100,7 +100,7 @@
     <parent link="bum_zl" />
     <child link="bum_xl" />
     <axis xyz="1 0 0" />
-    <limit lower="-0.345" upper="1" effort="1000" velocity="3"/>
+    <limit lower="-0.345" upper="1" effort="20" velocity="3"/>
     <!-- dynamics damping="5" friction="0.0"/ -->
 </joint>
 
@@ -108,7 +108,7 @@
 <inertial>
     <origin xyz="0.0 0.0 -0.19" rpy="0 0 0" />
     <mass value="0.3" />
-    <inertia ixx="0.1" ixy="0.1" ixz="0.1" iyy="0.1" iyz="0.1" izz="0.1"/>
+    <inertia ixx="0.000000001" ixy="0.000000001" ixz="0.000000001" iyy="0.000000001" iyz="0.000000001" izz="0.000000001"/>
 </inertial>
 <visual>
     <origin xyz="0 0 0" rpy="0 0 1.571" />
@@ -133,7 +133,7 @@
     <parent link="bum_xl" />
     <child link="left_hip" />
     <axis xyz="0 1 0" />
-    <limit lower="0" upper="1" effort="1000" velocity="3"/>
+    <limit lower="0" upper="1" effort="20" velocity="3"/>
     <!-- dynamics damping="5" friction="0.0"/ -->
 </joint>
 
@@ -168,7 +168,7 @@
     <parent link="left_hip" />
     <child link="left_shin" />
     <axis xyz="0 1 0" />
-    <limit lower="-1.3" upper="0" effort="1000" velocity="3"/>
+    <limit lower="-1.3" upper="0" effort="20" velocity="3"/>
     <!-- dynamics damping="5" friction="0.0"/ -->
 </joint>
 
@@ -204,7 +204,7 @@
     <parent link="left_shin" />
     <child link="left_ankle" />
     <axis xyz="0 1 0" />
-    <limit lower="-1.3" upper="0.3" effort="1000" velocity="3"/>
+    <limit lower="-1.3" upper="0.3" effort="20" velocity="3"/>
 </joint>
 
 
@@ -237,7 +237,7 @@
     <parent link="left_shin" />
     <child link="left_foot" />
     <axis xyz="0 1 0" />
-    <limit lower="-0.4" upper="0.7" effort="1000" velocity="3"/>
+    <limit lower="-0.4" upper="0.7" effort="20" velocity="3"/>
 </joint>
 
 
@@ -246,7 +246,7 @@
 <link name="left_foot">
 <inertial>
     <origin xyz="0.0 0.0 0" rpy="0 0 0" />
-    <mass value="0.5" />
+    <mass value="1.5" />
     <inertia ixx="0.10917" ixy="1.3005" ixz="-0.01020" iyy="0.15687" iyz="3.44815" izz="0.1"/>
 </inertial>
 <visual>
@@ -272,7 +272,7 @@
     <parent link="left_foot" />
     <child link="left_leg_contact_sensor" />
     <axis xyz="0 1 0" />
-    <!-- <limit lower="-0.4" upper="0.7" effort="1000" velocity="3"/> -->
+    <!-- <limit lower="-0.4" upper="0.7" effort="20" velocity="3"/> -->
     <!-- dynamics damping="5" friction="0.0"/ -->
 </joint>
 
@@ -330,7 +330,7 @@
     <parent link="base_body" />
     <child link="bum_zr" />
     <axis xyz="0 0 1" />
-    <limit lower="-0.345" upper="0.345" effort="1000" velocity="3"/>
+    <limit lower="-0.345" upper="0.345" effort="20" velocity="3"/>
     <!-- dynamics damping="5" friction="0.0"/ -->
 </joint>
 
@@ -338,7 +338,7 @@
 <inertial>
     <origin xyz="0.0 0.0 -0.19" rpy="0 0 0" />
     <mass value="0.3" />
-    <inertia ixx="0.1" ixy="0.1" ixz="0.1" iyy="0.1" iyz="0.1" izz="0.1"/>
+    <inertia ixx="0.000000001" ixy="0.000000001" ixz="0.000000001" iyy="0.000000001" iyz="0.000000001" izz="0.000000001"/>
 </inertial>
 <visual>
     <origin xyz="0 0 0" rpy="0 0 1.571" />
@@ -362,7 +362,7 @@
     <parent link="bum_zr" />
     <child link="bum_xr" />
     <axis xyz="1 0 0" />
-    <limit lower="-1" upper="0.345" effort="1000" velocity="3"/>
+    <limit lower="-1" upper="0.345" effort="20" velocity="3"/>
     <!-- dynamics damping="5" friction="0.0"/ -->
 </joint>
 
@@ -370,7 +370,7 @@
 <inertial>
     <origin xyz="0.0 0.0 -0.19" rpy="0 0 0" />
     <mass value="0.3" />
-    <inertia ixx="0.1" ixy="0.1" ixz="0.1" iyy="0.1" iyz="0.1" izz="0.1"/>
+    <inertia ixx="0.000000001" ixy="0.000000001" ixz="0.000000001" iyy="0.000000001" iyz="0.000000001" izz="0.000000001"/>
 </inertial>
 <visual>
     <origin xyz="0 0 0" rpy="0 0 1.571" />
@@ -393,7 +393,7 @@
     <parent link="bum_xr" />
     <child link="right_hip" />
     <axis xyz="0 1 0" />
-    <limit lower="0" upper="1" effort="1000" velocity="3"/>
+    <limit lower="0" upper="1" effort="20" velocity="3"/>
     <!-- dynamics damping="5" friction="0.0"/ -->
 </joint>
 
@@ -424,7 +424,7 @@
     <parent link="right_hip" />
     <child link="right_shin" />
     <axis xyz="0 1 0" />
-    <limit lower="-1.3" upper="0" effort="1000" velocity="3"/>
+    <limit lower="-1.3" upper="0" effort="20" velocity="3"/>
     <!-- dynamics damping="5" friction="0.0"/ -->
 </joint>
 
@@ -459,7 +459,7 @@
     <parent link="right_shin" />
     <child link="right_ankle" />
     <axis xyz="0 1 0" />
-    <limit lower="-1.3" upper="0.3" effort="1000" velocity="3"/>
+    <limit lower="-1.3" upper="0.3" effort="20" velocity="3"/>
 </joint>
 
 
@@ -492,7 +492,7 @@
     <parent link="right_shin" />
     <child link="right_foot" />
     <axis xyz="0 1 0" />
-    <limit lower="-0.4" upper="0.7" effort="1000" velocity="3"/>
+    <limit lower="-0.4" upper="0.7" effort="20" velocity="3"/>
     <!-- dynamics damping="5" friction="0.0"/ -->
 </joint>
 
@@ -502,7 +502,7 @@
 <link name="right_foot">
 <inertial>
     <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
-    <mass value="0.5" />
+    <mass value="1.5" />
     <inertia ixx="0.119924" ixy="-0.0003874" ixz="-0.0010433" iyy="0.166674" iyz="5.8010177" izz="0.1314669"/>
 </inertial>
 <visual>
@@ -529,7 +529,7 @@
     <parent link="right_foot" />
     <child link="right_leg_contact_sensor" />
     <axis xyz="0 1 0" />
-    <!-- <limit lower="-" upper="0.7" effort="1000" velocity="3"/> -->
+    <!-- <limit lower="-" upper="0.7" effort="20" velocity="3"/> -->
     <!-- dynamics damping="5" friction="0.0"/ -->
 </joint>
 
@@ -573,21 +573,20 @@
      ######################### right hand ########################
      ########################################################## -->
 
-<joint
+<!-- <joint
     name="shoulder_zrj" type="revolute">
     <origin xyz="0 -0.3 0.87" rpy="0 0 0" />
     <parent link="base_body" />
     <child link="shoulder_zr" />
     <axis xyz="0 0 1" />
-    <limit lower="-0.345" upper="1.65" effort="1000" velocity="3"/>
-    <!-- dynamics damping="5" friction="0.0"/ -->
+    <limit lower="-0.345" upper="1.65" effort="20" velocity="3"/>
 </joint>
 
 <link name="shoulder_zr">
 <inertial>
     <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
-    <mass value="0.3" />
-    <inertia ixx="0.1" ixy="0.1" ixz="0.1" iyy="0.1" iyz="0.1" izz="0.1"/>
+    <mass value="0.1" />
+    <inertia ixx="0.000000001" ixy="0.000000001" ixz="0.000000001" iyy="0.000000001" iyz="0.000000001" izz="0.000000001"/>
 </inertial>
 <visual>
     <origin xyz="0 0 0" rpy="0 0 1.571" />
@@ -610,15 +609,14 @@
     <parent link="shoulder_zr" />
     <child link="shoulder_xr" />
     <axis xyz="1 0 0" />
-    <limit lower="-0.1" upper="1.6" effort="1000" velocity="3"/>
-    <!-- dynamics damping="5" friction="0.0"/ -->
+    <limit lower="-0.1" upper="1.6" effort="20" velocity="3"/>
 </joint>
 
 <link name="shoulder_xr">
 <inertial>
     <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
-    <mass value="0.3" />
-    <inertia ixx="0.1" ixy="0.1" ixz="0.1" iyy="0.1" iyz="0.1" izz="0.1"/>
+    <mass value="0.1" />
+    <inertia ixx="0.000000001" ixy="0.000000001" ixz="0.000000001" iyy="0.000000001" iyz="0.000000001" izz="0.000000001"/>
 </inertial>
 <visual>
     <origin xyz="0 0 0" rpy="0 0 1.571" />
@@ -641,15 +639,14 @@
     <parent link="shoulder_xr" />
     <child link="right_shoulder" />
     <axis xyz="0 1 0" />
-    <limit lower="0" upper="3" effort="1000" velocity="3"/>
-    <!-- dynamics damping="5" friction="0.0"/ -->
+    <limit lower="0" upper="3" effort="20" velocity="3"/>
 </joint>
 
 
 <link name="right_shoulder">
 <inertial>
     <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
-    <mass value="0.3" />
+    <mass value="0.1" />
     <inertia ixx="0.030306" ixy="1.072426" ixz="-0.00014" iyy="0.123799" iyz="-3.24634" izz="0.10389"/>
 
 </inertial>
@@ -675,15 +672,14 @@
     <parent link="right_shoulder" />
     <child link="right_forearm" />
     <axis xyz="1 0 0" />
-    <limit lower="-1.6" upper="0" effort="1000" velocity="3"/>
-    <!-- dynamics damping="5" friction="0.0"/ -->
+    <limit lower="-1.6" upper="0" effort="20" velocity="3"/>
 </joint>
 
 
 <link name="right_forearm">
 <inertial>
     <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
-    <mass value="0.3" />
+    <mass value="0.1" />
     <inertia ixx="0.37633" ixy="-5.2759" ixz="-8.13739" iyy="0.382769" iyz="-0.00136" izz="0.03977"/>
 </inertial>
 <visual>
@@ -698,28 +694,27 @@
     <mesh filename="package://rl_walker_description/meshes/dae/forearm.dae" scale="1 1 1" />
     </geometry>
 </collision>
-</link>
+</link> -->
 
 
 <!-- ##########################################################
      ######################### right left ########################
      ########################################################## -->
 
-<joint
+<!-- <joint
     name="shoulder_zlj" type="revolute">
     <origin xyz="0 0.3 0.87" rpy="0 0 3.142" />
     <parent link="base_body" />
     <child link="shoulder_zl" />
     <axis xyz="0 0 1" />
-    <limit lower="-1.65" upper="0.1" effort="1000" velocity="3"/>
-    <!-- dynamics damping="5" friction="0.0"/ -->
+    <limit lower="-1.65" upper="0.1" effort="20" velocity="3"/>
 </joint>
 
 <link name="shoulder_zl">
 <inertial>
     <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
-    <mass value="0.3" />
-    <inertia ixx="0.1" ixy="0.1" ixz="0.1" iyy="0.1" iyz="0.1" izz="0.1"/>
+    <mass value="0.1" />
+    <inertia ixx="0.000000001" ixy="0.000000001" ixz="0.000000001" iyy="0.000000001" iyz="0.000000001" izz="0.000000001"/>
 </inertial>
 <visual>
     <origin xyz="0 0 0" rpy="0 0 1.571" />
@@ -742,15 +737,14 @@
     <parent link="shoulder_zl" />
     <child link="shoulder_xl" />
     <axis xyz="1 0 0" />
-    <limit lower="-0.1" upper="1.6" effort="1000" velocity="3"/>
-    <!-- dynamics damping="5" friction="0.0"/ -->
+    <limit lower="-0.1" upper="1.6" effort="20" velocity="3"/>
 </joint>
 
 <link name="shoulder_xl">
 <inertial>
     <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
-    <mass value="0.3" />
-    <inertia ixx="0.1" ixy="0.1" ixz="0.1" iyy="0.1" iyz="0.1" izz="0.1"/>
+    <mass value="0.1" />
+    <inertia ixx="0.000000001" ixy="0.000000001" ixz="0.000000001" iyy="0.000000001" iyz="0.000000001" izz="0.000000001"/>
 </inertial>
 <visual>
     <origin xyz="0 0 0" rpy="0 0 1.571" />
@@ -773,15 +767,14 @@
     <parent link="shoulder_xl" />
     <child link="left_shoulder" />
     <axis xyz="0 1 0" />
-    <limit lower="-3" upper="0" effort="1000" velocity="3"/>
-    <!-- dynamics damping="5" friction="0.0"/ -->
+    <limit lower="-3" upper="0" effort="20" velocity="3"/>
 </joint>
 
 
 <link name="left_shoulder">
 <inertial>
     <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
-    <mass value="0.3" />
+    <mass value="0.1" />
     <inertia ixx="0.030306" ixy="1.072426" ixz="-0.00014" iyy="0.123799" iyz="-3.24634" izz="0.10389"/>
 </inertial>
 <visual>
@@ -807,15 +800,14 @@
     <parent link="left_shoulder" />
     <child link="left_forearm" />
     <axis xyz="1 0 0" />
-    <limit lower="-1.6" upper="0" effort="1000" velocity="3"/>
-    <!-- dynamics damping="5" friction="0.0"/ -->
+    <limit lower="-1.6" upper="0" effort="20" velocity="3"/>
 </joint>
 
 
 <link name="left_forearm">
 <inertial>
     <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
-    <mass value="0.3" />
+    <mass value="0.1" />
     <inertia ixx="0.37633" ixy="-5.2759" ixz="-8.13739" iyy="0.382769" iyz="-0.00136" izz="0.03977"/>
 </inertial>
 <visual>
@@ -830,6 +822,6 @@
     <mesh filename="package://rl_walker_description/meshes/dae/forearm.dae" scale="1 1 1" />
     </geometry>
 </collision>
-</link>
+</link> -->
 
 </robot>

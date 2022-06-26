@@ -7,7 +7,7 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Quaternion, Vector3
 from sensor_msgs.msg import JointState
 import tf
-import numpy
+# import numpy
 import time
 import math
 import numpy as np
@@ -91,16 +91,15 @@ gazebo_msgs/ContactState[] states
 
 class WalkerState(object):
 
-    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, discrete_division=10):
+    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, done_reward = -1000.0, desired_force=7.08, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, discrete_division=10):
         rospy.logdebug("Starting Catbot State Class object...")
         self.desired_world_point = Vector3(0.0, 0.0, 0.0)
         self._min_height = min_height
         self._max_height = max_height
         self._abs_max_roll = abs_max_roll
         self._abs_max_pitch = abs_max_pitch
-        self._joint_increment_value = joint_increment_value
         self._done_reward = done_reward
-        self._alive_reward = alive_reward
+        # self._alive_reward = alive_reward
         self._desired_force = desired_force
         self._desired_yaw = desired_yaw
         self.base_linear_vel = None
@@ -109,10 +108,11 @@ class WalkerState(object):
         self._weight_r3 = weight_r3
         self._weight_r4 = weight_r4
         self._weight_r5 = weight_r5
-
+        self.current_step_reward = 0
         self.step_time = time.time()
-
-        self.previous_obs = np.array([
+        self.get_it_right = []
+        self.step_number = 0
+        self.previous_obs = [
             0, 0, 0.78, 
             0, 0, 0, 
             0, 0, 0,
@@ -124,10 +124,15 @@ class WalkerState(object):
             0, 0, 0,
             0, 0, 0, 0, 0,            
             0, 0, 0, 0, 0,            
-        ], dtype=np.float32)
+        ]
 
 
         self.previous_action = np.array([
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+        ], np.float32)
+
+        self.current_action = np.array([
             0, 0, 0, 0, 0,
             0, 0, 0, 0, 0,
         ], np.float32)
@@ -153,7 +158,7 @@ class WalkerState(object):
 
         self._list_of_observations = [
                 # body 3d pose
-                "body_pose_x",
+                # "body_pose_x",
                 "body_pose_y",
                 "body_pose_z",
 
@@ -172,47 +177,47 @@ class WalkerState(object):
                 "body_vel_angular_y",
                 "body_vel_angular_z",
                 # Angles
-                "joint_states_bum_zlj",
                 "joint_states_bum_xlj",
-                "joint_states_bum_ylj",
-                "joint_states_knee_left",
-                "joint_states_foot_lj",
-                "joint_states_bum_zrj",
                 "joint_states_bum_xrj",
+                "joint_states_bum_ylj",
                 "joint_states_bum_yrj",
-                "joint_states_knee_right",
+                "joint_states_bum_zlj",
+                "joint_states_bum_zrj",
+                "joint_states_foot_lj",
                 "joint_states_foot_rj",
+                "joint_states_knee_left",
+                "joint_states_knee_right",
 
                 # anglur vels 
-                "angular_vel_bum_zlj",
                 "angular_vel_bum_xlj",
-                "angular_vel_bum_ylj",
-                "angular_vel_knee_left",
-                "angular_vel_foot_lj",
-                "angular_vel_bum_zrj",
                 "angular_vel_bum_xrj",
+                "angular_vel_bum_ylj",
                 "angular_vel_bum_yrj",
-                "angular_vel_knee_right",
+                "angular_vel_bum_zlj",
+                "angular_vel_bum_zrj",
+                "angular_vel_foot_lj",
                 "angular_vel_foot_rj",
+                "angular_vel_knee_left",
+                "angular_vel_knee_right",
 
                 # distance
-                "distance_from_desired_point",
+                # "distance_from_desired_point",
 
                 # contact forces of sensors
-                "contact_force_left_leg",
-                "contact_force_right_leg",
+                # "contact_force_left_leg",
+                # "contact_force_right_leg",
 
                 # 10 action commands in previous time step
-                "prev_action_bum_zlj",
                 "prev_action_bum_xlj",
-                "prev_action_bum_ylj",
-                "prev_action_knee_left",
-                "prev_action_foot_lj",
-                "prev_action_bum_zrj",
                 "prev_action_bum_xrj",
+                "prev_action_bum_ylj",
                 "prev_action_bum_yrj",
-                "prev_action_knee_right",
+                "prev_action_bum_zlj",
+                "prev_action_bum_zrj",
+                "prev_action_foot_lj",
                 "prev_action_foot_rj",
+                "prev_action_knee_left",
+                "prev_action_knee_right",
                 
                 ]
 
@@ -223,6 +228,7 @@ class WalkerState(object):
         self.base_orientation = Quaternion()
         self.base_linear_acceleration = Vector3()
         self.left_contact_force = Vector3()
+        # self.left_contact_force.force = 0
         self.right_contact_force = Vector3()
         self.joints_state = JointState()
 
@@ -230,14 +236,15 @@ class WalkerState(object):
         #  because in real robots this data is not trivial.
 
         self.obs_pub_object = rospy.Publisher('/obs', Float32MultiArray, queue_size= 2)
+        # self.obs_pub_2_object = rospy.Publisher('/get_it_right', Float32MultiArray, queue_size= 2)
         self.action_pub_object = rospy.Publisher('/action_per_step', Float32MultiArray, queue_size= 2)
 
         rospy.Subscriber("/odom", Odometry, self.odom_callback)
         # We use the IMU for orientation and linearacceleration detection
         rospy.Subscriber("/imu/data", Imu, self.imu_callback)
         # We use it to get the contact force, to know if its in the air or stumping too hard.
-        rospy.Subscriber("/lower_left_leg_contactsensor_state", ContactsState, self.left_contact_callback)
-        rospy.Subscriber("/lower_right_leg_contactsensor_state", ContactsState, self.right_contact_callback)
+        # rospy.Subscriber("/lower_left_leg_contactsensor_state", ContactsState, self.left_contact_callback)
+        # rospy.Subscriber("/lower_right_leg_contactsensor_state", ContactsState, self.right_contact_callback)
         # We use it to get the joints positions and calculate the reward associated to it
         rospy.Subscriber("/joint_states", JointState, self.joints_state_callback)
 
@@ -246,6 +253,9 @@ class WalkerState(object):
         We check that all systems are ready
         :return:
         """
+
+        self.current_step_reward = 0
+
         data_pose = None
         while data_pose is None and not rospy.is_shutdown():
             try:
@@ -338,43 +348,12 @@ class WalkerState(object):
         :param p_end:
         :return:
         """
-        a = numpy.array((self.base_position.x, self.base_position.y, self.base_position.z))
-        b = numpy.array((p_end.x, p_end.y, p_end.z))
+        a = np.array((self.base_position.x, self.base_position.y, self.base_position.z))
+        b = np.array((p_end.x, p_end.y, p_end.z))
 
-        distance = numpy.linalg.norm(a - b)
+        distance = np.linalg.norm(a - b)
 
         return distance
-
-    def get_left_contact_force_magnitude(self):
-        """
-        You will see that because the X axis is the one pointing downwards, it will be the one with
-        higher value when touching the floor
-        For a Robot of total mas of 0.55Kg, a gravity of 9.81 m/sec**2, Weight = 0.55*9.81=5.39 N
-        Falling from around 5centimetres ( negligible height ), we register peaks around
-        Fx = 7.08 N
-        :return:
-        """
-        contact_force = self.left_contact_force
-        contact_force_np = numpy.array((contact_force.x, contact_force.y, contact_force.z))
-        force_magnitude = numpy.linalg.norm(contact_force_np)
-
-        return force_magnitude
-
-    
-    def get_right_contact_force_magnitude(self):
-        """
-        You will see that because the X axis is the one pointing downwards, it will be the one with
-        higher value when touching the floor
-        For a Robot of total mas of 0.55Kg, a gravity of 9.81 m/sec**2, Weight = 0.55*9.81=5.39 N
-        Falling from around 5centimetres ( negligible height ), we register peaks around
-        Fx = 7.08 N
-        :return:
-        """
-        contact_force = self.right_contact_force
-        contact_force_np = numpy.array((contact_force.x, contact_force.y, contact_force.z))
-        force_magnitude = numpy.linalg.norm(contact_force_np)
-
-        return force_magnitude
 
     # def get_base_linear_vel(self):
     #     return self.base_linear_vel
@@ -395,46 +374,13 @@ class WalkerState(object):
         self.base_orientation = msg.orientation
         self.base_linear_acceleration = msg.linear_acceleration
 
-    def left_contact_callback(self,msg):
-        """
-        /lowerleg_contactsensor_state/states[0]/contact_positions ==> PointContact in World
-        /lowerleg_contactsensor_state/states[0]/contact_normals ==> NormalContact in World
-
-        ==> One is an array of all the forces, the other total,
-         and are relative to the contact link referred to in the sensor.
-        /lowerleg_contactsensor_state/states[0]/wrenches[]
-        /lowerleg_contactsensor_state/states[0]/total_wrench
-        :param msg:
-        :return:
-        """
-        for state in msg.states:
-            self.left_contact_force = state.total_wrench.force
-
-
-    def right_contact_callback(self,msg):
-        """
-        /lowerleg_contactsensor_state/states[0]/contact_positions ==> PointContact in World
-        /lowerleg_contactsensor_state/states[0]/contact_normals ==> NormalContact in World
-
-        ==> One is an array of all the forces, the other total,
-         and are relative to the contact link referred to in the sensor.
-        /lowerleg_contactsensor_state/states[0]/wrenches[]
-        /lowerleg_contactsensor_state/states[0]/total_wrench
-        :param msg:
-        :return:
-        """
-        for state in msg.states:
-            self.right_contact_force = state.total_wrench.force
-
-
-    
 
     def joints_state_callback(self,msg):
         self.joints_state = msg
 
     def catbot_height_ok(self):
 
-        height_ok = self._min_height <= self.get_base_height() < self._max_height
+        height_ok = self._min_height <= self.get_base_height()
         # print(self.get_base_height())
         return height_ok
 
@@ -444,6 +390,7 @@ class WalkerState(object):
         roll_ok = self._abs_max_roll > abs(orientation_rpy.x)
         pitch_ok = self._abs_max_pitch > abs(orientation_rpy.y)
         orientation_ok = roll_ok and pitch_ok
+        # print()
         return orientation_ok
 
 
@@ -458,118 +405,43 @@ class WalkerState(object):
 
 
 
-
-
-    # def calculate_reward_joint_position(self, weight=1.0):
-    #     """
-    #     We calculate reward base on the joints configuration. The more near 0 the better.
-    #     :return:
-    #     """
-    #     acumulated_joint_pos = 0.0
-    #     for joint_pos in self.joints_state.position:
-    #         # Abs to remove sign influence, it doesnt matter the direction of turn.
-    #         acumulated_joint_pos += abs(joint_pos)
-    #         rospy.logdebug("calculate_reward_joint_position>>acumulated_joint_pos=" + str(acumulated_joint_pos))
-    #     reward = weight * acumulated_joint_pos
-    #     rospy.logdebug("calculate_reward_joint_position>>reward=" + str(reward))
-    #     return reward
-
-    def calculate_velocity(self, weight=1.0):
+    def calculate_x_linear_velocity_reward(self, weight=1.0):
         a = self.base_linear_vel.x
-        r1, r2, r3 = 0, 0, 0
-        if self.desired_world_point.x > 0:
-            r1 = (weight*a)/self.desired_world_point.x
-        if self.desired_world_point.y > 0:
-            r2 = (weight*a)/self.desired_world_point.y
-        if self.desired_world_point.z > 0:
-            r3 = (weight*a)/self.desired_world_point.z
+        return a*weight
 
-        # m = Vector3()
-        # pass
-        
-        return r1 + r2 +r3
+    def calculate_y_lateral_displacement_reward(self, weight=3):
+        a = self.base_position.y
+        return (a**2)*weight
 
-    def calculate_reward_joint_effort(self, weight=1.0):
+    def calculate_z_lateral_displacement_reward(self, weight=50):
+        a = self.base_position.z
+        m = self.get_base_height()
+        if m > self._max_height:
+            return (a**2)*weight
+        else:
+            return 0
+
+    def calculate_alive_reward(self, weight = 25):
+        # self.current_step_reward += self.step_number
+        self.current_step_reward += 0.05
+        return (self.current_step_reward)*weight
+
+    def calculate_reward_joint_effort(self, weight=0.02):
         """
         We calculate reward base on the joints effort readings. The more near 0 the better.
         :return:
         """
         acumulated_joint_effort = 0.0
-        for joint_effort in self.joints_state.effort:
+        for joint_effort in self.current_action:
             # Abs to remove sign influence, it doesnt matter the direction of the effort.
             acumulated_joint_effort += abs(joint_effort)
             rospy.logdebug("calculate_reward_joint_effort>>joint_effort=" + str(joint_effort))
             rospy.logdebug("calculate_reward_joint_effort>>acumulated_joint_effort=" + str(acumulated_joint_effort))
-        reward = weight * acumulated_joint_effort
+        # we substrace aje from 200 is because 200 is max torque action applied
+        reward = weight * (acumulated_joint_effort)
         rospy.logdebug("calculate_reward_joint_effort>>reward=" + str(reward))
         return reward
 
-    def calculate_left_reward_contact_force(self, weight=1.0):
-        """
-        We calculate reward base on the contact force.
-        The nearest to the desired contact force the better.
-        We use exponential to magnify big departures from the desired force.
-        Default ( 7.08 N ) desired force was taken from reading of the robot touching
-        the ground from a negligible height of 5cm.
-        :return:
-        """
-        force_magnitude = self.get_left_contact_force_magnitude()
-        force_displacement = force_magnitude - self._desired_force
-
-        rospy.logdebug("calculate_left_reward_contact_force>>force_magnitude=" + str(force_magnitude))
-        rospy.logdebug("calculate_left_reward_contact_force>>force_displacement=" + str(force_displacement))
-        # Abs to remove sign
-        reward = weight * abs(force_displacement)
-        rospy.logdebug("calculate_left_reward_contact_force>>reward=" + str(reward))
-        return reward
-
-    def calculate_right_reward_contact_force(self, weight=1.0):
-        """
-        We calculate reward base on the contact force.
-        The nearest to the desired contact force the better.
-        We use exponential to magnify big departures from the desired force.
-        Default ( 7.08 N ) desired force was taken from reading of the robot touching
-        the ground from a negligible height of 5cm.
-        :return:
-        """
-        force_magnitude = self.get_right_contact_force_magnitude()
-        force_displacement = force_magnitude - self._desired_force
-
-        rospy.logdebug("calculate_right_reward_contact_force>>force_magnitude=" + str(force_magnitude))
-        rospy.logdebug("calculate_right_reward_contact_force>>force_displacement=" + str(force_displacement))
-        # Abs to remove sign
-        reward = weight * abs(force_displacement)
-        rospy.logdebug("calculate_right_reward_contact_force>>reward=" + str(reward))
-        return reward
-
-
-    def calculate_reward_orientation(self, weight=1.0):
-        """
-        We calculate the reward based on the orientation.
-        The more its closser to 0 the better because it means its upright
-        desired_yaw is the yaw that we want it to be.
-        to praise it to have a certain orientation, here is where to set it.
-        :return:
-        """
-        curren_orientation = self.get_base_rpy()
-        yaw_displacement = curren_orientation.z - self._desired_yaw
-        rospy.logdebug("calculate_reward_orientation>>[R,P,Y]=" + str(curren_orientation))
-        acumulated_orientation_displacement = abs(curren_orientation.x) + abs(curren_orientation.y) + abs(yaw_displacement)
-        reward = weight * acumulated_orientation_displacement
-        rospy.logdebug("calculate_reward_orientation>>reward=" + str(reward))
-        return reward
-
-    def calculate_reward_distance_from_des_point(self, weight=1.0):
-        """
-        We calculate the distance from the desired point.
-        The closser the better
-        :param weight:
-        :return:reward
-        """
-        distance = self.get_distance_from_point(self.desired_world_point)
-        reward = weight * distance
-        rospy.logdebug("calculate_reward_orientation>>reward=" + str(reward))
-        return reward
 
     def calculate_total_reward(self):
         """
@@ -583,27 +455,14 @@ class WalkerState(object):
         :return:
         """
 
-        r1 = self.calculate_velocity(self._weight_r1)
-        r2 = self.calculate_reward_joint_effort(self._weight_r2)
-        # Desired Force in Newtons, taken form idle contact with 9.81 gravity.
-
-        r3_a = self.calculate_left_reward_contact_force(self._weight_r3)
-        r3_b = self.calculate_right_reward_contact_force(self._weight_r3)
-        r4 = self.calculate_reward_orientation(self._weight_r4)
-        r5 = self.calculate_reward_distance_from_des_point(self._weight_r5)
-
-        # The sign depend on its function.
-        total_reward = self._alive_reward - r2 - r3_a - r3_b- r4 - r5 + r1
-
-        rospy.logdebug("###############")
-        rospy.logdebug("alive_bonus=" + str(self._alive_reward))
-        rospy.logdebug("r1 joint_position=" + str(r1))
-        rospy.logdebug("r2 joint_effort=" + str(r2))
-        rospy.logdebug("r3a&b contact_force=" + str(r3_a) + " and " + str(r3_b))
-        rospy.logdebug("r4 orientation=" + str(r4))
-        rospy.logdebug("r5 distance=" + str(r5))
-        rospy.logdebug("total_reward=" + str(total_reward))
-        rospy.logdebug("###############")
+        r1 = self.calculate_x_linear_velocity_reward(self._weight_r1)
+        r2 = self.calculate_y_lateral_displacement_reward(self._weight_r2)
+        r3 = self.calculate_z_lateral_displacement_reward(self._weight_r3)
+        r4 = self.calculate_alive_reward(self._weight_r4)
+        r5 = self.calculate_reward_joint_effort(self._weight_r5)
+        
+        # print(r1, r2, r3, r4, r5)
+        total_reward = r1 -r2 -r3 + r4 - r5
 
         return total_reward
 
@@ -612,16 +471,10 @@ class WalkerState(object):
 
 
 
-    def calculate_angular_vels(self):
-        my_list = list(self.previous_obs)
+    def get_angular_vels(self):
         joint_states = self.get_joint_states()
-        joint_states = joint_states.position
-        angular_vels = []
-        for i in range(12, 22):
-            tn = time.time() - self.step_time
-            val = (joint_states[i-12] - my_list[i])/tn
-            angular_vels.append(val)
-
+        angular_vels = joint_states.velocity
+        # print(angular_vels)
         return angular_vels
             
 
@@ -659,7 +512,7 @@ class WalkerState(object):
         :return: observation
         """
 
-        distance_from_desired_point = self.get_distance_from_point(self.desired_world_point)
+        # distance_from_desired_point = self.get_distance_from_point(self.desired_world_point)
 
         ################################################
         base_orientation = self.get_base_rpy()
@@ -667,7 +520,7 @@ class WalkerState(object):
         base_pitch = base_orientation.y
         base_yaw = base_orientation.z
         #################################################
-        body_pose_x = self.base_position.x
+        # body_pose_x = self.base_position.x
         body_pose_y = self.base_position.y
         body_pose_z = self.base_position.z
         #################################################
@@ -680,167 +533,115 @@ class WalkerState(object):
         body_vel_angular_z = self.base_angular_vel.z
         #################################################
         
-        list_of_angular_vels = self.calculate_angular_vels()
-        angular_vel_bum_zlj = list_of_angular_vels[0] 
-        angular_vel_bum_xlj = list_of_angular_vels[1]
+        list_of_angular_vels = self.get_angular_vels()
+        if len(list_of_angular_vels) == 0:
+            list_of_angular_vels = [0,0,0,0,0,0,0,0,0,0]
+        angular_vel_bum_xlj = list_of_angular_vels[0]
+        angular_vel_bum_xrj = list_of_angular_vels[1]
         angular_vel_bum_ylj = list_of_angular_vels[2]
-        angular_vel_knee_left = list_of_angular_vels[3]
-        angular_vel_foot_lj = list_of_angular_vels[4]
+        angular_vel_bum_yrj = list_of_angular_vels[3]
+        angular_vel_bum_zlj = list_of_angular_vels[4] 
         angular_vel_bum_zrj = list_of_angular_vels[5]
-        angular_vel_bum_xrj = list_of_angular_vels[6]
-        angular_vel_bum_yrj = list_of_angular_vels[7]
-        angular_vel_knee_right = list_of_angular_vels[8]
-        angular_vel_foot_rj = list_of_angular_vels[9]
+        angular_vel_foot_lj = list_of_angular_vels[6]
+        angular_vel_foot_rj = list_of_angular_vels[7]
+        angular_vel_knee_left = list_of_angular_vels[8]
+        angular_vel_knee_right = list_of_angular_vels[9]
         
+        #################################################
         #################################################
 
         list_of_previous_actions = list(self.previous_action)
 
-        prev_action_bum_zlj = list_of_previous_actions[0]
-        prev_action_bum_xlj = list_of_previous_actions[1]
+        prev_action_bum_xlj = list_of_previous_actions[0]
+        prev_action_bum_xrj = list_of_previous_actions[1]
         prev_action_bum_ylj = list_of_previous_actions[2]
-        prev_action_knee_left = list_of_previous_actions[3]
-        prev_action_foot_lj = list_of_previous_actions[4]
+        prev_action_bum_yrj = list_of_previous_actions[3]
+        prev_action_bum_zlj = list_of_previous_actions[4]
         prev_action_bum_zrj = list_of_previous_actions[5]
-        prev_action_bum_xrj = list_of_previous_actions[6]
-        prev_action_bum_yrj = list_of_previous_actions[7]
-        prev_action_knee_right = list_of_previous_actions[8]
-        prev_action_foot_rj = list_of_previous_actions[9]
+        prev_action_foot_lj = list_of_previous_actions[6]
+        prev_action_foot_rj = list_of_previous_actions[7]
+        prev_action_knee_left = list_of_previous_actions[8]
+        prev_action_knee_right = list_of_previous_actions[9]
 
         #################################################
-        left_contact_force = self.get_left_contact_force_magnitude()
-        right_contact_force = self.get_right_contact_force_magnitude()
+        #################################################
 
         joint_states = self.get_joint_states()
-        # joint_states_haa = joint_states.position[0]
-        # joint_states_hfe = joint_states.position[1]
-        # joint_states_kfe = joint_states.position[2]
+        js = joint_states.position
 
-        joint_states_bum_zlj = joint_states.position[0] 
-        joint_states_bum_xlj = joint_states.position[1]
-        joint_states_bum_ylj = joint_states.position[2]
-        joint_states_knee_left = joint_states.position[3]
-        joint_states_foot_lj = joint_states.position[4]
-        joint_states_bum_zrj = joint_states.position[5]
-        joint_states_bum_xrj = joint_states.position[6]
-        joint_states_bum_yrj = joint_states.position[7]
-        joint_states_knee_right = joint_states.position[8]
-        joint_states_foot_rj = joint_states.position[9]
+        joint_states_bum_xlj = js[0]
+        joint_states_bum_xrj = js[1]
+        joint_states_bum_ylj = js[2]
+        joint_states_bum_yrj = js[3]
+        joint_states_bum_zlj = js[4] 
+        joint_states_bum_zrj = js[5]
+        joint_states_foot_lj = js[6]
+        joint_states_foot_rj = js[7]
+        joint_states_knee_left = js[8]
+        joint_states_knee_right = js[9]
 
-        observation = []
-        for obs_name in self._list_of_observations:
-            if obs_name == "distance_from_desired_point":
-                observation.append(distance_from_desired_point)
-            
-            elif obs_name == "base_roll":
-                observation.append(base_roll)
-            elif obs_name == "base_pitch":
-                observation.append(base_pitch)
-            elif obs_name == "base_yaw":
-                observation.append(base_yaw)
-            
-            elif obs_name == "contact_force_left_leg":
-                observation.append(left_contact_force)
-            elif obs_name == "contact_force_right_leg":
-                observation.append(right_contact_force)
-            
-            elif obs_name == "joint_states_bum_zlj":
-                observation.append(joint_states_bum_zlj)
-            elif obs_name == "joint_states_bum_xlj":
-                observation.append(joint_states_bum_xlj)
-            elif obs_name == "joint_states_bum_ylj":
-                observation.append(joint_states_bum_ylj)
-            elif obs_name == "joint_states_knee_left":
-                observation.append(joint_states_knee_left)
-            elif obs_name == "joint_states_foot_lj":
-                observation.append(joint_states_foot_lj)
-            
-            elif obs_name == "joint_states_bum_zrj":
-                observation.append(joint_states_bum_zrj)
-            elif obs_name == "joint_states_bum_xrj":
-                observation.append(joint_states_bum_xrj)
-            elif obs_name == "joint_states_bum_yrj":
-                observation.append(joint_states_bum_yrj)
-            elif obs_name == "joint_states_knee_right":
-                observation.append(joint_states_knee_right)
-            elif obs_name == "joint_states_foot_rj":
-                observation.append(joint_states_foot_rj)
+        #################################################
+        #################################################
 
-            elif obs_name == "body_pose_x":
-                observation.append(body_pose_x)
-            elif obs_name == "body_pose_y":
-                observation.append(body_pose_y)
-            elif obs_name == "body_pose_z":
-                observation.append(body_pose_z)
-            
-            elif obs_name == "body_vel_x":
-                observation.append(body_vel_x)
-            elif obs_name == "body_vel_y":
-                observation.append(body_vel_y)
-            elif obs_name == "body_vel_z":
-                observation.append(body_vel_z)
+        observation = [
+            #################
+            body_pose_y, 
+            body_pose_z,
+            #################
+            body_vel_x,
+            body_vel_y,
+            body_vel_z,
+            #################
+            base_roll,
+            base_pitch,
+            base_yaw,
+            #################
+            body_vel_angular_x,
+            body_vel_angular_y,
+            body_vel_angular_z,
+            #################
+            joint_states_bum_xlj,
+            joint_states_bum_xrj,
+            joint_states_bum_ylj,
+            joint_states_bum_yrj,
+            joint_states_bum_zlj,
+            joint_states_bum_zrj,
+            joint_states_foot_lj,
+            joint_states_foot_rj,
+            joint_states_knee_left,
+            joint_states_knee_right,
+            #################
+            angular_vel_bum_xlj,
+            angular_vel_bum_xrj,
+            angular_vel_bum_ylj,
+            angular_vel_bum_yrj,
+            angular_vel_bum_zlj,
+            angular_vel_bum_zrj,
+            angular_vel_foot_lj,
+            angular_vel_foot_rj,
+            angular_vel_knee_left,
+            angular_vel_knee_right,
+            #################
+            prev_action_bum_xlj,
+            prev_action_bum_xrj,
+            prev_action_bum_ylj,
+            prev_action_bum_yrj,
+            prev_action_bum_zlj,
+            prev_action_bum_zrj,
+            prev_action_foot_lj,
+            prev_action_foot_rj,
+            prev_action_knee_left,
+            prev_action_knee_right,
+            #################
 
-            elif obs_name == "body_vel_angular_x":
-                observation.append(body_vel_angular_x)
-            elif obs_name == "body_vel_angular_y":
-                observation.append(body_vel_angular_y)
-            elif obs_name == "body_vel_angular_z":
-                observation.append(body_vel_angular_z)
-            
-            elif obs_name == "angular_vel_bum_zlj":
-                observation.append(angular_vel_bum_zlj)
-            elif obs_name == "angular_vel_bum_xlj":
-                observation.append(angular_vel_bum_xlj)
-            elif obs_name == "angular_vel_bum_ylj":
-                observation.append(angular_vel_bum_ylj)
-            elif obs_name == "angular_vel_knee_left":
-                observation.append(angular_vel_knee_left)
-            elif obs_name == "angular_vel_foot_lj":
-                observation.append(angular_vel_foot_lj)
-            
-
-            elif obs_name == "angular_vel_bum_zrj":
-                observation.append(angular_vel_bum_zrj)
-            elif obs_name == "angular_vel_bum_xrj":
-                observation.append(angular_vel_bum_xrj)
-            elif obs_name == "angular_vel_bum_yrj":
-                observation.append(angular_vel_bum_yrj)
-            elif obs_name == "angular_vel_knee_right":
-                observation.append(angular_vel_knee_right)
-            elif obs_name == "angular_vel_foot_rj":
-                observation.append(angular_vel_foot_rj)
-
-            
-
-            elif obs_name == "prev_action_bum_zlj":
-                observation.append(prev_action_bum_zlj)
-            elif obs_name == "prev_action_bum_xlj":
-                observation.append(prev_action_bum_xlj)
-            elif obs_name == "prev_action_bum_ylj":
-                observation.append(prev_action_bum_ylj)
-            elif obs_name == "prev_action_knee_left":
-                observation.append(prev_action_knee_left)
-            elif obs_name == "prev_action_foot_lj":
-                observation.append(prev_action_foot_lj)
-            
-            elif obs_name == "prev_action_bum_zrj":
-                observation.append(prev_action_bum_zrj)
-            elif obs_name == "prev_action_bum_xrj":
-                observation.append(prev_action_bum_xrj)
-            elif obs_name == "prev_action_bum_yrj":
-                observation.append(prev_action_bum_yrj)
-            elif obs_name == "prev_action_knee_right":
-                observation.append(prev_action_knee_right)
-            elif obs_name == "prev_action_foot_rj":
-                observation.append(prev_action_foot_rj)
-
-            else:
-                print(obs_name)
-                raise NameError('Observation Asked does not exist=='+str(obs_name))
-        # print(len(observation))
+        ]
+        
         msg = Float32MultiArray()
         msg.data = observation
+        # msg2 = Float32MultiArray()
+        # msg2.data = self.get_it_right
         self.obs_pub_object.publish(msg)
+        # self.obs_pub_2_object.publish(msg2)
         return observation
 
 
@@ -848,7 +649,7 @@ class WalkerState(object):
 
 
 
-    def get_action_to_position(self, action, prev_obs):
+    def dump_previous_actions(self, action, previous_actions,step_number):
         """
         Here we have the ACtions number to real joint movement correspondance.
 
@@ -875,29 +676,16 @@ class WalkerState(object):
         :param action: Integer that goes from 0 to 5, because we have 6 actions.
         :return:
         """
-        self.step_time = time.time()
-        self.previous_obs = prev_obs
-        self.previous_action = action
-        # We get current Joints values
-        joint_states = self.get_joint_states()
-        joint_states_position = joint_states.position
 
+        self.previous_action = previous_actions
+        self.current_action = action
+        self.step_number = step_number
 
-        action_position = [
-            0.0, 0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0, 0.0,
-            ]
-
-        rospy.logdebug("get_action_to_position>>>"+str(joint_states_position))
-        try: #Increment ankle_lj
-            for idx, val in enumerate(action_position):
-                action_position[idx] = joint_states_position[idx]
-        except:
-            pass    
+        prev_action = list(action)           
         msg = Float32MultiArray()
-        msg.data = action_position
+        msg.data = prev_action
         self.action_pub_object.publish(msg)
-        return action_position
+        return prev_action
 
     def process_data(self):
         """
@@ -908,14 +696,15 @@ class WalkerState(object):
         catbot_height_ok = self.catbot_height_ok()
         catbot_orientation_ok = self.catbot_orientation_ok()
         # print(catbot_height_ok, catbot_orientation_ok)
-
+        # print(catbot_height_ok, catbot_orientation_ok)
         done = not(catbot_height_ok and catbot_orientation_ok)
         if done:
-            rospy.logdebug("It fell, so the reward has to be very low")
+            # rospy.loginfo("It fell, so the reward has to be very low")
             total_reward = self._done_reward
         else:
             rospy.logdebug("Calculate normal reward because it didn't fall.")
             total_reward = self.calculate_total_reward()
+            print(total_reward)
 
         return total_reward, done
 
